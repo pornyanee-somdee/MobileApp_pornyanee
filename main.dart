@@ -1,118 +1,157 @@
 import 'package:flutter/material.dart';
+void main(){
+  runApp(MyST());
+}
+class MyST extends StatelessWidget {
+  const MyST({super.key});
 
-void main() {
-  runApp(const MyApp());
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: ("NEW CAL"),
+      home: MyApp(),
+    );
+  }
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatefulWidget { //กำหนดตัวแปร
   const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  String output = "0";
-  Color getButtonColor(String buttonLabel) {
-    if (["/", "x", "-", "+", "=","%"].contains(buttonLabel)) {
-      return Colors.deepOrange.shade700; 
-    } else if (["CLEAR", "C"].contains(buttonLabel)) {
-      return Colors.red.shade700;
-    }
-    return Colors.black; 
-  }
+class _MyAppState extends State<MyApp> {//กำหนดตัวแปร
 
-  // **ฟังก์ชัน myButton ที่ปรับปรุงขอบมน, สี่เหลี่ยมจัตุรัส, และมี Padding**
-  Widget myButton(String buttonLabel) {
-    final buttonTextColor = getButtonColor(buttonLabel);
+  String num1 = "";
+  String num2 ="";
+  String operator = "";
+  String display = "0";
 
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(5.0), 
-        child: AspectRatio(
-          aspectRatio: 1.0, 
-          child: OutlinedButton(
-            onPressed: () {
-              print("Button pressed: $buttonLabel");
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: buttonTextColor,
-              backgroundColor: Colors.white,
-              elevation: 2.0, 
-              // กำหนดเส้นขอบ
-              side: BorderSide(color: Colors.grey.shade300, width: 1.0), 
-              // ทำให้ปุ่มมีขอบมน
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0), 
-              ),
-              textStyle: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            child: Text(
-              buttonLabel,
-            ),
-          ),
+  Widget calcBtn(String text, VoidCallback onPressed){
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        child: Text(text,style: TextStyle(fontSize: 22)),
         ),
-      ),
-    );
+      );
   }
+  ////
+  void pressNumber(String values){
+    setState(() {
+      if (operator.isEmpty){
+        num1 += values;
+        display = num1;
+      }else{
+        num2 += values;
+        display = num2;
+      }
+    });
+  }
+  void pressOperator(String op){
+    setState(() {
+      operator = op;
+    });
+  }
+  void clear(){
+    setState(() {
+      num1 = "";
+      num2 = "";
+      operator = "";
+      display = "0";
+    });
+  }
+  void calculate(){
+    if (num1.isEmpty || num2.isEmpty || operator.isEmpty) return;
+    double n1 = double.parse(num1);
+    double n2 = double.parse(num2);
+    double result = 0 ;
 
+    switch (operator){
+      case "+":
+      result = n1 + n2;
+      break;
+      case "-":
+      result = n1 - n2;
+      break;
+      case "*":
+      result = n1 * n2;
+      break;
+      case "/":
+      result = n1 / n2;
+      result = double.parse(result.toStringAsFixed(2)); //ทศนิยม 2 ตำแหน่ง
+      break;
+    }
+    setState(() {
+      display = result.toString();
+      num1 = result.toString();
+      num2 = "";
+      operator = "";
+    });
+  }
+  ////
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: const Text("Calculator",),
-          centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 236, 113, 191),
-          elevation: 0,
-          foregroundColor: Colors.black,
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(12, 24, 12, 12),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  output,
-                  style: const TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-              const Expanded(
-              child: SizedBox(), // ใช้ Expanded เปล่า ๆ เพื่อกินพื้นที่ว่างทั้งหมด
-            ),
-              const Divider(color: Colors.grey), 
-              Expanded(
-                child: Column(
-                  children: [
-                    Flexible(child: Row(children: [myButton("7"), myButton("8"), myButton("9"), myButton("%")])),
-                  
-                  // แถวที่ 2: 4, 5, 6, /
-                  Flexible(child: Row(children: [myButton("4"), myButton("5"), myButton("6"), myButton("/")])),
-                  
-                  // แถวที่ 3: 1, 2, 3, x
-                  Flexible(child: Row(children: [myButton("1"), myButton("2"), myButton("3"), myButton("x")])),
-                  
-                  // แถวที่ 4: C, 0, -, +
-                  Flexible(child: Row(children: [myButton("."), myButton("0"), myButton("-"), myButton("+")])),
-                  
-                  // แถวที่ 5: . , = และปุ่มว่าง 2 ปุ่ม
-                  Flexible(child: Row(children: [myButton("C"), myButton("=")])),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("NEW CAL"),
       ),
-    );
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            display,
+            style: TextStyle(fontSize: 40,color: Colors.red),
+            ),
+            SizedBox(height: 15,),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                calcBtn("7", () => pressNumber("7")),
+                calcBtn("8", () => pressNumber("8")),
+                calcBtn("9", () => pressNumber("9")),
+                calcBtn("+", () => pressOperator("+")),
+              ],
+            ),
+            SizedBox(height: 10,),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                calcBtn("4", () => pressNumber("4")),
+                calcBtn("5", () => pressNumber("5")),
+                calcBtn("6", () => pressNumber("6")),
+                calcBtn("-", () => pressOperator("-")),
+              ],
+            ),
+            SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                calcBtn("1", () => pressNumber("1")),
+                calcBtn("2", () => pressNumber("2")),
+                calcBtn("3", () => pressNumber("3")),
+                calcBtn("*", () =>  pressOperator("*")),
+              ],
+            ),
+            SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                calcBtn("0", () => pressNumber("0")),
+                calcBtn("C", clear),
+                calcBtn("=", calculate),
+                calcBtn("/", () => pressOperator("/")),
+              ],
+            ),
+        ],
+      ),
+    ),
+  );
+   
   }
 }
