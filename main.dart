@@ -1,157 +1,91 @@
 import 'package:flutter/material.dart';
-void main(){
-  runApp(MyST());
+import 'foodMenu.dart';
+
+void main() {
+  runApp(const MyApp());
 }
-class MyST extends StatelessWidget {
-  const MyST({super.key});
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: ("NEW CAL"),
-      home: MyApp(),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+      
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyApp extends StatefulWidget { //กำหนดตัวแปร
-  const MyApp({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  
+
+  final String title;
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyAppState extends State<MyApp> {//กำหนดตัวแปร
+class _MyHomePageState extends State<MyHomePage> {
+   List<foodMenu> menu = [
+      foodMenu("กุ้งเผา", "500"),
+      foodMenu("กระเพราหมู", "80"),
+      foodMenu("ปลาเผา", "50"),
+      foodMenu("ข้าวมันไก่", "50"),
+      foodMenu("ผัดไท", "90"),
+    ];
+  //int _counter = 0;
 
-  String num1 = "";
-  String num2 ="";
-  String operator = "";
-  String display = "0";
+  /*void _incrementCounter() {
+    setState(() {
+     
+      _counter++;
+    });
+  }*/
+  List<Widget> getData(int count){
+    List<Widget> data = [];
 
-  Widget calcBtn(String text, VoidCallback onPressed){
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: FloatingActionButton(
-        onPressed: onPressed,
-        child: Text(text,style: TextStyle(fontSize: 22)),
-        ),
+    //data.add(Text("กดปุ่ม เพิ่มค่า ตัวเลข",style: TextStyle(fontSize: 40,color: Colors.red),),);
+    //data.add(Text(_counter.toString(),style: TextStyle(fontSize: 50),));
+    for(var i = 1; i <= count; i++){
+      var menu = ListTile(title: Text("เมนูที่ $i",style: TextStyle(fontSize: 20,color: Colors.red),
+      ),
+      subtitle: Text("หัวข้อย่อยที่ $i"),
       );
-  }
-  ////
-  void pressNumber(String values){
-    setState(() {
-      if (operator.isEmpty){
-        num1 += values;
-        display = num1;
-      }else{
-        num2 += values;
-        display = num2;
-      }
-    });
-  }
-  void pressOperator(String op){
-    setState(() {
-      operator = op;
-    });
-  }
-  void clear(){
-    setState(() {
-      num1 = "";
-      num2 = "";
-      operator = "";
-      display = "0";
-    });
-  }
-  void calculate(){
-    if (num1.isEmpty || num2.isEmpty || operator.isEmpty) return;
-    double n1 = double.parse(num1);
-    double n2 = double.parse(num2);
-    double result = 0 ;
-
-    switch (operator){
-      case "+":
-      result = n1 + n2;
-      break;
-      case "-":
-      result = n1 - n2;
-      break;
-      case "*":
-      result = n1 * n2;
-      break;
-      case "/":
-      result = n1 / n2;
-      result = double.parse(result.toStringAsFixed(2)); //ทศนิยม 2 ตำแหน่ง
-      break;
+      data.add(menu);
+      //data.add(Text("ListView List with รอบที่ $i"));
     }
-    setState(() {
-      display = result.toString();
-      num1 = result.toString();
-      num2 = "";
-      operator = "";
-    });
+    return data;
   }
-  ////
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text("NEW CAL"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            display,
-            style: TextStyle(fontSize: 40,color: Colors.red),
-            ),
-            SizedBox(height: 15,),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                calcBtn("7", () => pressNumber("7")),
-                calcBtn("8", () => pressNumber("8")),
-                calcBtn("9", () => pressNumber("9")),
-                calcBtn("+", () => pressOperator("+")),
-              ],
-            ),
-            SizedBox(height: 10,),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                calcBtn("4", () => pressNumber("4")),
-                calcBtn("5", () => pressNumber("5")),
-                calcBtn("6", () => pressNumber("6")),
-                calcBtn("-", () => pressOperator("-")),
-              ],
-            ),
-            SizedBox(height: 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                calcBtn("1", () => pressNumber("1")),
-                calcBtn("2", () => pressNumber("2")),
-                calcBtn("3", () => pressNumber("3")),
-                calcBtn("*", () =>  pressOperator("*")),
-              ],
-            ),
-            SizedBox(height: 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                calcBtn("0", () => pressNumber("0")),
-                calcBtn("C", clear),
-                calcBtn("=", calculate),
-                calcBtn("/", () => pressOperator("/")),
-              ],
-            ),
-        ],
-      ),
-    ),
-  );
-   
+      body:ListView.builder(
+        itemCount: 5,
+        itemBuilder: (BuildContext context,int index){
+        foodMenu food=menu[index];
+        return ListTile(
+          title: Text("เมนูที่ ${index + 1}"),
+          subtitle: Text(food.foodname + "ราคา" + food.foodprice + "บาท"),
+        );
+      }),
+      /*floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),*/
+    );
   }
 }
